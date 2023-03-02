@@ -1,0 +1,5 @@
+services:
+  python:
+    build:
+      dockerfile: ./docker/python/Dockerfile
+    command: tail -f /dev/null
