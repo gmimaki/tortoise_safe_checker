@@ -11,7 +11,6 @@ RUN groupadd -g $GID $GROUPNAME && \
     useradd -m -s /bin/bash -u $UID -g $GID $USERNAME
 USER $USERNAME
 
-COPY . .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+COPY ./requirements.txt .
 
-CMD ["python", "main.py"]
+RUN pip install --upgrade pip && pip install -r requirements.txt

@@ -1,5 +1,7 @@
 services:
   python:
     build:
-      dockerfile: ./docker/python/Dockerfile
-    command: tail -f /dev/null
+      context: ./docker/python
+    volumes:
+      - $PWD:/app
+    command: python main.py && tail -f /dev/null
