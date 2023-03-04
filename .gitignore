@@ -1,0 +1,8 @@
+train_images/ok/*.JPG
+train_images/ok/*.jpg
+train_images/ok/*.PNG
+train_images/ok/*.png
+train_images/dangerous/*.JPG
+train_images/dangerous/*.jpg
+train_images/dangerous/*.PNG
+train_images/dangerous/*.png
