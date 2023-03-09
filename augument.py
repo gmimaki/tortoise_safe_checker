@@ -19,5 +19,5 @@ dangerous_file = glob.glob(input_path_dangerous)
 
 output_path_dangerous = "./train_images/dangerous_augumented/"
 if os.path.isdir(output_path_dangerous) == True:
-    os.remove(output_path_dangerous)
+    os.removedirs(output_path_dangerous)
 os.mkdir(output_path_dangerous)
