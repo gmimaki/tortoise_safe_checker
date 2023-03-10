@@ -1,2 +1,4 @@
 matplotlib
 opencv-python
+tensorflow == 2.12.0rc0
+keras == 2.12.0rc0

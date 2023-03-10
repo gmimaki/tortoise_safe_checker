@@ -4,4 +4,4 @@ services:
       context: ./docker/python
     volumes:
       - $PWD:/app
-    command: python main.py && tail -f /dev/null
+    command: tail -f /dev/null

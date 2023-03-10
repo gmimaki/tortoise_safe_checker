@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import glob
+import cv2
 
 ok_images = glob.glob("./train_images/ok/*")
-print(ok_images)
+
+image = cv2.imread(ok_images[0])
+print(image)
 print("HELLO")
