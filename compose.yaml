@@ -1,5 +1,6 @@
 services:
   python:
+    container_name: tortoise_safe_checker-python
     build:
       context: ./docker/python
     volumes:

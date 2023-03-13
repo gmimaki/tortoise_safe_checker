@@ -32,7 +32,7 @@ N_img = 20 # 1枚当たりの水増し枚数
 input_path_ok = "./train_images/ok/*"
 ok_files = glob.glob(input_path_ok)
 
-output_path_ok = "./train_images/ok_augumented/"
+output_path_ok = "./train_images/augumented/ok/"
 if os.path.isdir(output_path_ok) == True:
     shutil.rmtree(output_path_ok)
 os.mkdir(output_path_ok)
@@ -40,7 +40,7 @@ os.mkdir(output_path_ok)
 input_path_dangerous = "./train_images/dangerous/*"
 dangerous_files = glob.glob(input_path_dangerous)
 
-output_path_dangerous = "./train_images/dangerous_augumented/"
+output_path_dangerous = "./train_images/augumented/dangerous/"
 if os.path.isdir(output_path_dangerous) == True:
     shutil.rmtree(output_path_dangerous)
 os.mkdir(output_path_dangerous)
