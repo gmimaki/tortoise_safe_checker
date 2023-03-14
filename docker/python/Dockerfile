@@ -1,7 +1,7 @@
 FROM python:3.11-slim-buster
 WORKDIR /app
 
-RUN apt-get update
+RUN apt-get update && apt-get upgrade -y && apt-get install -y libgl1-mesa-dev libopencv-dev
 
 ARG USERNAME=tourose
 ARG GROUPNAME=reptile
