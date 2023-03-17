@@ -22,3 +22,5 @@ train_images/augumented/dangerous/*.PNG
 train_images/augumented/dangerous/*.png
 train_images/augumented/dangerous/*.jpeg
 train_images/augumented/dangerous/*.webp
+classes.sav
+cnn.h5
