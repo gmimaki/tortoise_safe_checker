@@ -24,3 +24,5 @@ train_images/augumented/dangerous/*.jpeg
 train_images/augumented/dangerous/*.webp
 classes.sav
 cnn.h5
+
+infra/environments/dev/.terraform/
