@@ -160,7 +160,7 @@ def mqtt_connection_from_path(input: InputData) -> mqtt.Connection:
         client=mqtt_client,
         on_connection_interrupted=None,
         on_connection_resumed=None,
-        client_id=uuid.UUID(bytes=os.urandom(16), version=4),
+        client_id=str(uuid.UUID(bytes=os.urandom(16), version=4)),
         host_name=endpoint,
         port=port,
         clean_session=False,
