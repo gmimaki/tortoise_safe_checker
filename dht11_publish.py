@@ -128,7 +128,7 @@ def parseArgs() -> InputData:
 
     args = parser.parse_args()
 
-    return InputData(endpoint=args.endpoint, cert=args.cert, key=args.key, ca=args.ca)
+    return InputData(endpoint=args.endpoint, cert=args.cert, key=args.key, ca=args.ca, topic=args.topic)
 
 def mqtt_connection_from_path(input: InputData) -> mqtt.Connection:
     endpoint = input.endpoint
