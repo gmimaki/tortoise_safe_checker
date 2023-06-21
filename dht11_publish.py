@@ -4,7 +4,7 @@ import uuid
 import RPi.GPIO as GPIO
 import argparse
 from dataclasses import dataclass
-from awscrt import mqtt, http, io
+from awscrt import mqtt, io
 import time
 
 dhtPin = 17
@@ -204,7 +204,8 @@ def main(input: InputData):
         result = read_dht11()
         if result:
             humidity, temperature = result
-            message = "humidity: %s %%, Temperature: %s C`" % (humidity, temperature)
+            now = time.time()
+            message = "humidity: %s %%, Temperature: %s C`, Time: %.8f" % (humidity, temperature, now)
             message_json = json.dumps(message)
             mqtt_connection.publish(topic=message_topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE)
         time.sleep(10)
