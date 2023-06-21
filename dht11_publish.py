@@ -1,3 +1,5 @@
+import os
+import uuid
 import RPi.GPIO as GPIO
 import argparse
 from dataclasses import dataclass
@@ -126,6 +128,7 @@ def parseArgs() -> InputData:
     return InputData(endpoint=args.endpoint, cert=args.cert, key=args.key, ca=args.ca)
 
 def mqtt_connection_from_path(input: InputData) -> mqtt.Connection:
+    endpoint = input.endpoint
     certPath = input.cert
     keyPath = input.key
     caPath = input.ca
@@ -134,68 +137,52 @@ def mqtt_connection_from_path(input: InputData) -> mqtt.Connection:
     tls_ctx_options.override_default_trust_store_from_path(None, caPath)
 
     port = 443 if io.is_alpn_available() else 8883
-    # ここまでやった
 
-    if port == 443 and io.is_alpn_available() and use_custom_authorizer is False:
-        tls_ctx_options.alpn_list = ['http/1.1'] if use_websockets else ['x-amzn-mqtt-ca']
+    if port == 443 and io.is_alpn_available():
+        tls_ctx_options.alpn_list = ['x-amzn-mqtt-ca']
 
     socket_options = io.SocketOptions()
-    socket_options.connect_timeout_ms = _get(kwargs, 'tcp_connect_timeout_ms', 5000)
-    # These have been inconsistent between keepalive/keep_alive. Resolve both for now to ease transition.
-    socket_options.keep_alive = \
-        _get(kwargs, 'tcp_keep_alive', _get(kwargs, 'tcp_keepalive', False))
-
-    socket_options.keep_alive_timeout_secs = \
-        _get(kwargs, 'tcp_keep_alive_timeout_secs', _get(kwargs, 'tcp_keepalive_timeout_secs', 0))
-
-    socket_options.keep_alive_interval_secs = \
-        _get(kwargs, 'tcp_keep_alive_interval_secs', _get(kwargs, 'tcp_keepalive_interval_secs', 0))
-
-    socket_options.keep_alive_max_probes = \
-        _get(kwargs, 'tcp_keep_alive_max_probes', _get(kwargs, 'tcp_keepalive_max_probes', 0))
-
-    username = _get(kwargs, 'username', '')
-    if _get(kwargs, 'enable_metrics_collection', True):
-        username += _get_metrics_str(username)
-
-    if username == "":
-        username = None
-
-    client_bootstrap = _get(kwargs, 'client_bootstrap')
-    if client_bootstrap is None:
-        client_bootstrap = io.ClientBootstrap.get_or_create_static_default()
-
+    socket_options.connect_timeout_ms = 5000
+    socket_options.keep_alive = False
+    socket_options.keep_alive_timeout_secs = 0
+    socket_options.keep_alive_interval_secs = 0
+    socket_options.keep_alive_max_probes = 0
+    username = None
+    client_bootstrap = io.ClientBootstrap.get_or_create_static_default()
     tls_ctx = io.ClientTlsContext(tls_ctx_options)
-    mqtt_client = awscrt.mqtt.Client(client_bootstrap, tls_ctx)
+    mqtt_client = mqtt.Client(client_bootstrap, tls_ctx)
+    proxy_options = None
 
-    proxy_options = kwargs.get('http_proxy_options', kwargs.get('websocket_proxy_options', None))
     return mqtt.Connection(
         client=mqtt_client,
-        on_connection_interrupted=_get(kwargs, 'on_connection_interrupted'),
-        on_connection_resumed=_get(kwargs, 'on_connection_resumed'),
-        client_id=_get(kwargs, 'client_id'),
-        host_name=_get(kwargs, 'endpoint'),
+        on_connection_interrupted=None,
+        on_connection_resumed=None,
+        client_id=uuid.UUID(bytes=os.urandom(16), version=4),
+        host_name=endpoint,
         port=port,
-        clean_session=_get(kwargs, 'clean_session', False),
-        reconnect_min_timeout_secs=_get(kwargs, 'reconnect_min_timeout_secs', 5),
-        reconnect_max_timeout_secs=_get(kwargs, 'reconnect_max_timeout_secs', 60),
-        keep_alive_secs=_get(kwargs, 'keep_alive_secs', 1200),
-        ping_timeout_ms=_get(kwargs, 'ping_timeout_ms', 3000),
-        protocol_operation_timeout_ms=_get(kwargs, 'protocol_operation_timeout_ms', 0),
-        will=_get(kwargs, 'will'),
+        clean_session=False,
+        reconnect_min_timeout_secs=5,
+        reconnect_max_timeout_secs=60,
+        keep_alive_secs=30,
+        ping_timeout_ms=3000,
+        protocol_operation_timeout_ms=0,
+        will=None,
         username=username,
-        password=_get(kwargs, 'password'),
+        password=None,
         socket_options=socket_options,
-        use_websockets=use_websockets,
-        websocket_handshake_transform=websocket_handshake_transform,
+        use_websockets=False,
+        websocket_handshake_transform=None,
         proxy_options=proxy_options,
-        on_connection_success=_get(kwargs, 'on_connection_success'),
-        on_connection_failure=_get(kwargs, 'on_connection_failure'),
-        on_connection_closed=_get(kwargs, 'on_connection_closed'),
+        on_connection_success=None,
+        on_connection_failure=None,
+        on_connection_closed=None,
     )
 
 
 def main(input: InputData):
+    mqtt_connection = mqtt_connection_from_path(input)
+    connect_future = mqtt_connection.connect()
+    
     while True:
         result = read_dht11()
         if result:
