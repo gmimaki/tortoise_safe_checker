@@ -1,4 +1,5 @@
 import os
+import json
 import uuid
 import RPi.GPIO as GPIO
 import argparse
@@ -115,6 +116,7 @@ class InputData:
     cert: str
     key: str
     ca: str
+    topic: str
 
 def parseArgs() -> InputData:
     parser = argparse.ArgumentParser()
@@ -122,6 +124,7 @@ def parseArgs() -> InputData:
     parser.add_argument('--cert', type=str, required=True, help="path of device certificate")
     parser.add_argument('--key', type=str, required=True, help="path of private key")
     parser.add_argument('--ca', type=str, required=True, help="path of root certificate")
+    parser.add_argument('--topic', type=str, required=True, help="name of topic")
 
     args = parser.parse_args()
 
@@ -178,18 +181,33 @@ def mqtt_connection_from_path(input: InputData) -> mqtt.Connection:
         on_connection_closed=None,
     )
 
-
 def main(input: InputData):
     mqtt_connection = mqtt_connection_from_path(input)
     connect_future = mqtt_connection.connect()
-    
+
+    connect_future.result()
+    print("Connected")
+
+    message_topic = input.topic
+
+    # Subscribe
+    print("Subscribing to topic '{}'...".format(message_topic))
+    subscribe_future, packet_id = mqtt_connection.subscribe(
+        topic=message_topic,
+        qos=mqtt.QoS.AT_LEAST_ONCE,
+        callback=None)
+
+    subscribe_result = subscribe_future.result()
+    print("Subscribed with {}".format(str(subscribe_result['qos'])))
+
     while True:
         result = read_dht11()
         if result:
             humidity, temperature = result
-            # TODO ここでpublish
-            print ("humidity: %s %%,  Temperature: %s C`" % (humidity, temperature))
-        time.sleep(1)
+            message = "humidity: %s %%, Temperature: %s C`" % (humidity, temperature)
+            message_json = json.dumps(message)
+            mqtt_connection.publish(topic=message_topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE)
+        time.sleep(10)
 
 def destroy():
     GPIO.cleanup()
