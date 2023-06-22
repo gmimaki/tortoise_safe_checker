@@ -85,3 +85,65 @@ data "aws_iot_endpoint" "iot_endpoint" {
 data "http" "root_ca" {
     url = "https://www.amazontrust.com/repository/AmazonRootCA1.pem"
 }
+
+variable "kinesis_stream_arn" {
+    type = string
+}
+variable "kinesis_stream_name" {
+    type = string
+}
+
+resource "aws_iot_topic_rule" "rule" {
+    name = "rule"
+    description = "A rule to send message to a Firehose stream"
+    sql = "SELECT * FROM topic_temperature"
+    sql_version = "2016-03-23"
+    enabled = true
+
+    firehose {
+        delivery_stream_name = var.kinesis_stream_name
+        role_arn = aws_iam_role.topic_role.arn
+    }
+
+    # TODO error_actionがあったほうがよい
+}
+
+resource "aws_iam_role" "topic_role" {
+    name = "iotcore_topic_role"
+    assume_role_policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "sts:AssumeRole",
+            "Principal": {
+                "Service": "iot.amazonaws.com"
+            },
+            "Effect": "Allow",
+            "Sid": ""
+        }
+    ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "topic_policy" {
+    name = "iotcore_topic_policy"
+    role = aws_iam_role.topic_role.id
+
+    policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "firehose:PutRecord",
+                "firehose:PutRecordBatch"
+            ],
+            "Resource": "${var.kinesis_stream_arn}"
+        }
+    ]
+}
+EOF
+}
