@@ -6,6 +6,12 @@ resource "aws_kinesis_firehose_delivery_stream" "stream" {
   s3_configuration {
     role_arn = aws_iam_role.firehose_role.arn
     bucket_arn = aws_s3_bucket.bucket.arn
+
+    cloudwatch_logging_options {
+      enabled = true
+      log_group_name = aws_cloudwatch_log_group.firehose.name
+      log_stream_name = aws_cloudwatch_log_stream.firehose.name
+    }
   }
 }
 
@@ -38,12 +44,8 @@ resource "aws_iam_role_policy" "firehose_policy" {
     {
       "Effect": "Allow",
       "Action": [
-        "s3:AbortMultipartUpload",
-        "s3:GetBucketLocation",
-        "s3:GetObject",
-        "s3:ListBucket",
-        "s3:ListBucketMultipartUploads",
-        "s3:PutObject"
+        "s3:*",
+        "s3-object-lambda:*"
       ],
       "Resource": ["${aws_s3_bucket.bucket.arn}", "${aws_s3_bucket.bucket.arn}/*"]
     }
@@ -54,4 +56,30 @@ EOF
 
 resource "aws_s3_bucket" "bucket" {
   bucket = "iotcore-gmimaki"
+}
+
+data "aws_iam_policy_document" "bucket_policy" {
+  statement {
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.bucket.arn}/*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [aws_iam_role.firehose_role.arn]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = aws_s3_bucket.bucket.id
+  policy = data.aws_iam_policy_document.bucket_policy.json
+}
+
+resource "aws_cloudwatch_log_group" "firehose" {
+  name = "/aws/kinesisfirehose/iottopic"
+}
+
+resource "aws_cloudwatch_log_stream" "firehose" {
+  name = "S3Delivery"
+  log_group_name = aws_cloudwatch_log_group.firehose.name
 }
