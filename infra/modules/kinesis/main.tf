@@ -6,7 +6,6 @@ resource "aws_kinesis_firehose_delivery_stream" "stream" {
   s3_configuration {
     role_arn = aws_iam_role.firehose_role.arn
     bucket_arn = aws_s3_bucket.bucket.arn
-    prefix = "YYYY/MM/DD/HH"
     error_output_prefix = "error/"
 
     cloudwatch_logging_options {
