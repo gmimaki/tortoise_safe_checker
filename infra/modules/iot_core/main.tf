@@ -93,6 +93,10 @@ variable "kinesis_stream_name" {
     type = string
 }
 
+resource "aws_cloudwatch_log_group" "error" {
+  name = "iottopic_error"
+}
+
 resource "aws_iot_topic_rule" "rule" {
     name = "rule"
     description = "A rule to send message to a Firehose stream"
@@ -105,7 +109,12 @@ resource "aws_iot_topic_rule" "rule" {
         role_arn = aws_iam_role.topic_role.arn
     }
 
-    # TODO error_actionがあったほうがよい
+    error_action {
+        cloudwatch_logs {
+            role_arn = aws_iam_role.error.arn
+            log_group_name = aws_cloudwatch_log_group.error.name
+        }
+    }
 }
 
 resource "aws_iam_role" "topic_role" {
@@ -144,6 +153,48 @@ resource "aws_iam_role_policy" "topic_policy" {
             "Resource": "${var.kinesis_stream_arn}"
         }
     ]
+}
+EOF
+}
+
+resource "aws_iam_role" "error" {
+  name = "iot_error"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "iot.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "error" {
+  name = "iot_error"
+  role = aws_iam_role.error.id
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "*"
+    }
+  ]
 }
 EOF
 }
