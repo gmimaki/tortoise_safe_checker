@@ -205,10 +205,10 @@ def main(input: InputData):
         if result:
             humidity, temperature = result
             now = time.time()
-            message = "humidity: %s %%, Temperature: %s C`, Time: %.8f" % (humidity, temperature, now)
+            message = "humidity: %s, temperature: %s`, time: %.8f" % (humidity, temperature, now)
             message_json = json.dumps(message)
             mqtt_connection.publish(topic=message_topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE)
-        time.sleep(10)
+        time.sleep(1)
 
 def destroy():
     GPIO.cleanup()
