@@ -190,7 +190,8 @@ resource "aws_iam_role_policy" "error" {
       "Action": [
         "logs:CreateLogGroup",
         "logs:CreateLogStream",
-        "logs:PutLogEvents"
+        "logs:PutLogEvents",
+        "logs:DescribeLogStreams"
       ],
       "Resource": "*"
     }
