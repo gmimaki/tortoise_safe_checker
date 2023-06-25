@@ -8,11 +8,11 @@ resource "aws_kinesis_firehose_delivery_stream" "stream" {
     bucket_arn = aws_s3_bucket.bucket.arn
     error_output_prefix = "error/"
 
-    cloudwatch_logging_options {
-      enabled = true
-      log_group_name = aws_cloudwatch_log_group.firehose.name
-      log_stream_name = aws_cloudwatch_log_stream.firehose.name
-    }
+    #cloudwatch_logging_options {
+    #  enabled = true
+    #  log_group_name = aws_cloudwatch_log_group.firehose.name
+    #  log_stream_name = aws_cloudwatch_log_stream.firehose.name
+    #}
   }
 }
 
@@ -76,11 +76,11 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
   policy = data.aws_iam_policy_document.bucket_policy.json
 }
 
-resource "aws_cloudwatch_log_group" "firehose" {
-  name = "/aws/kinesisfirehose/iottopic"
-}
+#resource "aws_cloudwatch_log_group" "firehose" {
+#  name = "/aws/kinesisfirehose/iottopic"
+#}
 
-resource "aws_cloudwatch_log_stream" "firehose" {
-  name = "S3Delivery"
-  log_group_name = aws_cloudwatch_log_group.firehose.name
-}
+#resource "aws_cloudwatch_log_stream" "firehose" {
+#  name = "S3Delivery"
+#  log_group_name = aws_cloudwatch_log_group.firehose.name
+#}
