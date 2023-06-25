@@ -12,6 +12,8 @@ resource "aws_glue_catalog_table" "temperature" {
     "EXTERNAL" = "TRUE"
   }
 
+  # TODO partition
+
   #partition_keys {
   #  name = "year"
   #  type = "int"
