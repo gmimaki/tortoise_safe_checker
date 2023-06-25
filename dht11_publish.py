@@ -205,7 +205,7 @@ def main(input: InputData):
         if result:
             humidity, temperature = result
             now = time.time()
-            message = '{ "humidity": %s, "temperature": %s`, "time": %.8f }' % (humidity, temperature, now)
+            message = '{ "humidity": %s, "temperature": %s, "time": %.8f }' % (humidity, temperature, now)
             #message_json = json.dumps(message)
             #mqtt_connection.publish(topic=message_topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE)
             mqtt_connection.publish(topic=message_topic, payload=message, qos=mqtt.QoS.AT_LEAST_ONCE)
