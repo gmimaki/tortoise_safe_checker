@@ -107,6 +107,7 @@ resource "aws_iot_topic_rule" "rule" {
     firehose {
         delivery_stream_name = var.kinesis_stream_name
         role_arn = aws_iam_role.topic_role.arn
+        separator = "\n"
     }
 
     error_action {

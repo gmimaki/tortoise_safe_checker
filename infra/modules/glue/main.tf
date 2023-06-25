@@ -12,20 +12,20 @@ resource "aws_glue_catalog_table" "temperature" {
     "EXTERNAL" = "TRUE"
   }
 
-  partition_keys {
-    name = "year"
-    type = "int"
-  }
+  #partition_keys {
+  #  name = "year"
+  #  type = "int"
+  #}
 
-  partition_keys {
-    name = "month"
-    type = "int"
-  }
+  #partition_keys {
+  #  name = "month"
+  #  type = "int"
+  #}
 
-  partition_keys {
-    name = "day"
-    type = "int"
-  }
+  #partition_keys {
+  #  name = "day"
+  #  type = "int"
+  #}
 
   storage_descriptor {
     location = "s3://iotcore-gmimaki/"
