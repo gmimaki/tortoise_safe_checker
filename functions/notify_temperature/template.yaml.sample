@@ -23,12 +23,18 @@ Resources:
       Runtime: python3.8
       Architectures:
       - x86_64
+      Environment:
+        Variables:
+          SENDER_EMAIL: "TODO"
+          RECIPIENT: "TODO"
       Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+        Stream:
+          Type: DynamoDB # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /hello
-            Method: get
+            Stream: # TODO ARN
+            StartingPosition: TRIM_HORIZON
+            BatchSize: 100
+            Enabled: true
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group

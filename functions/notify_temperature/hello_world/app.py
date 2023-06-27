@@ -1,42 +1,52 @@
 import json
+import os
+import boto3
 
-# import requests
+def send_email(subject, body):
+    SENDER = os.environ["SENDER_EMAIL"]
+    RECIPIENT = os.environ["RECIPIENT_EMAIL"]
+    REGION = "ap-northeast-1"
+    CHARSET = "UTF-8"
 
+    client = boto3.client('ses', region_name=REGION)
+    try:
+        response = client.send_email(
+            Destination={
+                'ToAddress': [RECIPIENT]
+            },
+            Message={
+                'Body': {
+                    'Text': {
+                        'Charset': CHARSET,
+                        'Data': body
+                    },
+                    'Subject': {
+                        'Charset': CHARSET,
+                        'Data': subject
+                    }
+                }
+            },
+            Source=SENDER
+        )
+    except Exception as e:
+        print(e.response(['Error']['Message'])) # TODO エラー通知
+    else:
+        print(response['MessageId'])
 
 def lambda_handler(event, context):
-    """Sample pure Lambda function
-
-    Parameters
-    ----------
-    event: dict, required
-        API Gateway Lambda Proxy Input Format
-
-        Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
-
-    context: object, required
-        Lambda Context runtime methods and attributes
-
-        Context doc: https://docs.aws.amazon.com/lambda/latest/dg/python-context-object.html
-
-    Returns
-    ------
-    API Gateway Lambda Proxy Output Format: dict
-
-        Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
-    """
-
-    # try:
-    #     ip = requests.get("http://checkip.amazonaws.com/")
-    # except requests.RequestException as e:
-    #     # Send some context about this error to Lambda Logs
-    #     print(e)
-
-    #     raise e
+    for record in event['Records']:
+        if record['eventName'] == 'INSERT':
+            table = record['dynamodb']['TortoiseEnvironment']
+            temperature = table['Temperature']['N']
+            humidity = table['Humidity']['N']
+            if not (25 <= 35) or 10 <= humidity:
+                subject = "[ALERT] Temperature of Humid out of range"
+                body = f"Temperature: {temperature}, Humidity: {humidity}"
+                send_email(subject, body)
 
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "message": "hello world",
-            # "location": ip.text.replace("\n", "")
+            "result":True,
         }),
     }
