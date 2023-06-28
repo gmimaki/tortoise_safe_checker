@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from notify_temperature import app
+from notify import app
 
 
 @pytest.fixture()
@@ -62,7 +62,7 @@ def apigw_event():
     }
 
 
-def test_lambda_handler(apigw_event):
+def test_lambda_handler(apigw_event, mocker):
 
     ret = app.lambda_handler(apigw_event, "")
     data = json.loads(ret["body"])

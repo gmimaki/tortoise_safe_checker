@@ -1,32 +1,33 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  notify-temperature
+  python3.10
 
-  Sample SAM Template for notify-temperature
+  Sample SAM Template for notify
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
-    MemorySize: 128
 
     Tracing: Active
   Api:
     TracingEnabled: true
 Resources:
-  NotifyTemperatureFunction:
+  NotifyFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: notify-temperature/
-      Handler: app.lambda_handler
-      Runtime: python3.9
+      PackageType: Image
       Architectures:
       - x86_64
       Environment:
         Variables:
-          SENDER_EMAIL: "TODO"
-          RECIPIENT: "TODO"
+          SENDER_EMAIL: "gakutomimaki@gmail.com"
+          RECIPIENT_EMAIL: "gakutomimaki@gmail.com"
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./notify
+      DockerTag: python3.10-v1
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -42,9 +43,9 @@ Resources:
         Ref: ApplicationResourceGroup
       AutoConfigurationEnabled: 'true'
 Outputs:
-  NotifyTemperatureFunction:
+  NotifyFunction:
     Description: Hello World Lambda Function ARN
-    Value: !GetAtt NotifyTemperatureFunction.Arn
-  NotifyTemperatureFunctionIamRole:
+    Value: !GetAtt NotifyFunction.Arn
+  NotifyFunctionIamRole:
     Description: Implicit IAM Role created for Hello World function
-    Value: !GetAtt NotifyTemperatureFunctionRole.Arn
+    Value: !GetAtt NotifyFunctionRole.Arn
