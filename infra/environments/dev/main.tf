@@ -1,13 +1,13 @@
-module "kinesis" {
-  source = "../../modules/kinesis"
-}
+#module "kinesis" {
+#  source = "../../modules/kinesis"
+#}
 
-module "glue" {
-  source = "../../modules/glue"
-}
+#module "glue" {
+#  source = "../../modules/glue"
+#}
 
 module "iot_core" {
   source              = "../../modules/iot_core"
-  kinesis_stream_arn  = module.kinesis.stream_arn
-  kinesis_stream_name = module.kinesis.stream_name
+  #kinesis_stream_arn  = module.kinesis.stream_arn
+  #kinesis_stream_name = module.kinesis.stream_name
 }

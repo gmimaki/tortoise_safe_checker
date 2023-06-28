@@ -1,9 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  notify_temperature
+  notify-temperature
 
-  Sample SAM Template for notify_temperature
+  Sample SAM Template for notify-temperature
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -15,26 +15,18 @@ Globals:
   Api:
     TracingEnabled: true
 Resources:
-  HelloWorldFunction:
+  NotifyTemperatureFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: hello_world/
+      CodeUri: notify-temperature/
       Handler: app.lambda_handler
-      Runtime: python3.8
+      Runtime: python3.9
       Architectures:
       - x86_64
       Environment:
         Variables:
           SENDER_EMAIL: "TODO"
           RECIPIENT: "TODO"
-      Events:
-        Stream:
-          Type: DynamoDB # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Stream: # TODO ARN
-            StartingPosition: TRIM_HORIZON
-            BatchSize: 100
-            Enabled: true
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -50,15 +42,9 @@ Resources:
         Ref: ApplicationResourceGroup
       AutoConfigurationEnabled: 'true'
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: API Gateway endpoint URL for Prod stage for Hello World function
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
+  NotifyTemperatureFunction:
     Description: Hello World Lambda Function ARN
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
+    Value: !GetAtt NotifyTemperatureFunction.Arn
+  NotifyTemperatureFunctionIamRole:
     Description: Implicit IAM Role created for Hello World function
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+    Value: !GetAtt NotifyTemperatureFunctionRole.Arn

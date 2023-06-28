@@ -1,6 +1,7 @@
 import json
 import os
 import boto3
+from botocore.exceptions import ClientError
 
 def send_email(subject, body):
     SENDER = os.environ["SENDER_EMAIL"]
@@ -28,7 +29,7 @@ def send_email(subject, body):
             },
             Source=SENDER
         )
-    except Exception as e:
+    except ClientError as e:
         print(e.response(['Error']['Message'])) # TODO エラー通知
     else:
         print(response['MessageId'])
@@ -36,7 +37,7 @@ def send_email(subject, body):
 def lambda_handler(event, context):
     for record in event['Records']:
         if record['eventName'] == 'INSERT':
-            table = record['dynamodb']['TortoiseEnvironment']
+            table = record['dynamodb']['NewImage']
             temperature = table['Temperature']['N']
             humidity = table['Humidity']['N']
             if not (25 <= 35) or 10 <= humidity:

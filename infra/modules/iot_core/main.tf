@@ -86,12 +86,12 @@ data "http" "root_ca" {
     url = "https://www.amazontrust.com/repository/AmazonRootCA1.pem"
 }
 
-variable "kinesis_stream_arn" {
-    type = string
-}
-variable "kinesis_stream_name" {
-    type = string
-}
+#variable "kinesis_stream_arn" {
+#    type = string
+#}
+#variable "kinesis_stream_name" {
+#    type = string
+#}
 
 resource "aws_cloudwatch_log_group" "error" {
   name = "iottopic_error"
@@ -104,10 +104,17 @@ resource "aws_iot_topic_rule" "rule" {
     sql_version = "2016-03-23"
     enabled = true
 
-    firehose {
-        delivery_stream_name = var.kinesis_stream_name
-        role_arn = aws_iam_role.topic_role.arn
-        separator = "\n"
+    #firehose {
+    #    delivery_stream_name = var.kinesis_stream_name
+    #    role_arn = aws_iam_role.topic_role.arn
+    #    separator = "\n"
+    #}
+
+    dynamodbv2 {
+      put_item {
+        table_name = "TortoseEnvironment"
+      }
+      role_arn = aws_iam_role.topic_role.arn
     }
 
     error_action {
@@ -141,6 +148,23 @@ resource "aws_iam_role_policy" "topic_policy" {
     name = "iotcore_topic_policy"
     role = aws_iam_role.topic_role.id
 
+#    policy = <<EOF
+#{
+#    "Version": "2012-10-17",
+#    "Statement": [
+#        {
+#            "Effect": "Allow",
+#            "Action": [
+#                "firehose:PutRecord",
+#                "firehose:PutRecordBatch"
+#            ],
+#            "Resource": "${var.kinesis_stream_arn}"
+#        }
+#    ]
+#}
+#EOF
+
+# TODO SAM実行後リソース絞る
     policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -148,10 +172,9 @@ resource "aws_iam_role_policy" "topic_policy" {
         {
             "Effect": "Allow",
             "Action": [
-                "firehose:PutRecord",
-                "firehose:PutRecordBatch"
+                "dynamodb:PutItem"
             ],
-            "Resource": "${var.kinesis_stream_arn}"
+            "Resource": "*"
         }
     ]
 }
