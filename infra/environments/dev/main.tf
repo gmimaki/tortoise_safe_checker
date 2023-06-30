@@ -14,6 +14,11 @@ module "dynamodb" {
   source = "../../modules/dynamodb"
 }
 
+module "ses" {
+  source = "../../modules/ses"
+  email = var.sender_email
+}
+
 module "lambda" {
   source = "../../modules/lambda"
   sender_email = var.sender_email
