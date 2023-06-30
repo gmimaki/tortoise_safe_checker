@@ -38,9 +38,10 @@ def lambda_handler(event, context):
     for record in event['Records']:
         if record['eventName'] == 'INSERT':
             table = record['dynamodb']['NewImage']
-            temperature = table['Temperature']['N']
-            humidity = table['Humidity']['N']
-            if not (25 <= 35) or 10 <= humidity:
+            temperature = int(table['Temperature']['N'])
+            humidity = int(table['Humidity']['N'])
+            print(f"Temperature: {temperature} Humidity: {humidity}")
+            if not (25 <= temperature <= 35) or 10 <= humidity:
                 subject = "[ALERT] Temperature of Humid out of range"
                 body = f"Temperature: {temperature}, Humidity: {humidity}"
                 send_email(subject, body)
