@@ -112,7 +112,7 @@ resource "aws_iot_topic_rule" "rule" {
 
     dynamodbv2 {
       put_item {
-        table_name = "TortoseEnvironment"
+        table_name = var.dynamodb_table_name
       }
       role_arn = aws_iam_role.topic_role.arn
     }

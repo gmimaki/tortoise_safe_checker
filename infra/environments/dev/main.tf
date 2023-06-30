@@ -28,4 +28,5 @@ module "iot_core" {
   #kinesis_stream_arn  = module.kinesis.stream_arn
   #kinesis_stream_name = module.kinesis.stream_name
   dynamodb_table_arn = module.dynamodb.dynamodb_table_arn
+  dynamodb_table_name = module.dynamodb.dynamodb_table_name
 }
