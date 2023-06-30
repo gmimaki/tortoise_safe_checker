@@ -7,12 +7,6 @@ resource "aws_dynamodb_table" "tortoise_environment" {
 
   attribute {
     name = "Time"
-    Type = "N"
+    type = "N"
   }
-}
-
-resource "aws_lambda_event_source_mapping" "tortoise_environment" {
-  event_source_arn = aws_dynamodb_table.tortoise_environment.stream.arn
-  function_name = "TODO"
-  starting_position = "TRIM_HORIZON"
 }

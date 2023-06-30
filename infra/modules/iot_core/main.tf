@@ -15,7 +15,7 @@ resource "tls_private_key" "key" {
 resource "tls_self_signed_cert" "cert" {
     private_key_pem = tls_private_key.key.private_key_pem
 
-    validity_period_hours = 240
+    validity_period_hours = 24000
 
     allowed_uses = []
 
@@ -144,6 +144,10 @@ resource "aws_iam_role" "topic_role" {
 EOF
 }
 
+variable "dynamodb_table_arn" {
+    type = string
+}
+
 resource "aws_iam_role_policy" "topic_policy" {
     name = "iotcore_topic_policy"
     role = aws_iam_role.topic_role.id
@@ -164,7 +168,6 @@ resource "aws_iam_role_policy" "topic_policy" {
 #}
 #EOF
 
-# TODO SAM実行後リソース絞る
     policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -174,7 +177,7 @@ resource "aws_iam_role_policy" "topic_policy" {
             "Action": [
                 "dynamodb:PutItem"
             ],
-            "Resource": "*"
+            "Resource": "${var.dynamodb_table_arn}"
         }
     ]
 }
