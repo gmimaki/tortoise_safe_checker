@@ -205,10 +205,10 @@ def main(input: InputData):
         if result:
             humidity, temperature = result
             now = time.time()
-            message = '{ "humidity": %s, "temperature": %s, "time": %.8f }' % (humidity, temperature, now)
+            message = '{ "Humidity": %s, "Temperature": %s, "Time": %.8f }' % (humidity, temperature, now)
             # json.dumpsすると\がついてAWS IoT Core側でJSONとして解釈されなくなる
             mqtt_connection.publish(topic=message_topic, payload=message, qos=mqtt.QoS.AT_LEAST_ONCE)
-        time.sleep(1)
+        time.sleep(900)
 
 def destroy():
     GPIO.cleanup()

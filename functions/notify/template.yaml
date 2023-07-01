@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  python3.10
+
+  Sample SAM Template for notify
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+    Tracing: Active
+  Api:
+    TracingEnabled: true
+Resources:
+  NotifyFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      PackageType: Image
+      Architectures:
+      - x86_64
+      Environment:
+        Variables:
+          SENDER_EMAIL: "gakutomimaki@gmail.com"
+          RECIPIENT_EMAIL: "gakutomimaki@gmail.com"
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./notify
+      DockerTag: python3.10-v1
+
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Ref: ApplicationResourceGroup
+      AutoConfigurationEnabled: 'true'
+Outputs:
+  NotifyFunction:
+    Description: Hello World Lambda Function ARN
+    Value: !GetAtt NotifyFunction.Arn
+  NotifyFunctionIamRole:
+    Description: Implicit IAM Role created for Hello World function
+    Value: !GetAtt NotifyFunctionRole.Arn
