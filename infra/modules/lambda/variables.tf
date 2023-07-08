@@ -1,7 +1,10 @@
-variable "sender_email" {
-    type = string
-}
-variable "receipient_email" {
+#variable "sender_email" {
+#    type = string
+#}
+#variable "receipient_email" {
+#    type = string
+#}
+variable "sns_topic_arn" {
     type = string
 }
 variable "ecr_image_uri" {

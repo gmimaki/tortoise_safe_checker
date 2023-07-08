@@ -7,8 +7,9 @@ resource "aws_lambda_function" "notify_environment" {
 
   environment {
     variables = {
-      SENDER_EMAIL = var.sender_email
-      RECIPIENT_EMAIL = var.receipient_email
+      #SENDER_EMAIL = var.sender_email
+      #RECIPIENT_EMAIL = var.receipient_email
+      TOPIC_ARN = var.sns_topic_arn
     }
   }
 
@@ -68,6 +69,13 @@ resource "aws_iam_role_policy" "notify_environment" {
         "ses:SendRawEmail"
       ],
       "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": "${var.sns_topic_arn}"
     },
     {
       "Effect": "Allow",

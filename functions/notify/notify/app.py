@@ -34,6 +34,23 @@ def send_email(subject, body):
     else:
         print(response['MessageId'])
 
+sns = boto3.client('sns')
+def publish_topic(subject, body):
+    TOPIC_ARN = os.environ["TOPIC_ARN"]
+
+    try:
+        response = sns.publish(
+            TopicArn=TOPIC_ARN,
+            Subject=subject,
+            Message=body
+        )
+    except ClientError as e:
+        print(f"An error occurred: {e}")
+    else:
+        print(response)
+
+
+
 def lambda_handler(event, context):
     for record in event['Records']:
         if record['eventName'] == 'INSERT':
