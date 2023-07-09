@@ -61,7 +61,7 @@ def lambda_handler(event, context):
             if not (25 <= temperature <= 35) or 10 <= humidity:
                 subject = "[ALERT] Temperature of Humid out of range"
                 body = f"Temperature: {temperature}, Humidity: {humidity}"
-                send_email(subject, body)
+                publish_topic(subject, body)
 
     return {
         "statusCode": 200,
