@@ -9,12 +9,6 @@ resource "aws_sns_topic_subscription" "tortoise_safe_checker_sms" {
   endpoint = var.phone_number
 }
 
-resource "aws_sns_topic_subscription" "tortoise_safe_checker_sqs" {
-  topic_arn = aws_sns_topic.tortoise_safe_checker.arn
-  protocol = "sqs"
-  endpoint = var.sqs_queue_arn
-}
-
 resource "aws_sns_sms_preferences" "tortoise_safe_checker" {
   delivery_status_iam_role_arn = aws_iam_role.SNS_SMS_tortoise_safe_checker.arn
 }

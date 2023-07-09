@@ -14,15 +14,15 @@ module "dynamodb" {
   source = "../../modules/dynamodb"
 }
 
-module "sqs" {
-  source     = "../../modules/sqs"
-  account_id = var.account_id
-}
-
 module "sns" {
   source        = "../../modules/sns"
   phone_number  = var.phone_number
-  sqs_queue_arn = module.sqs.sqs_queue_arn
+}
+
+module "sqs" {
+  source     = "../../modules/sqs"
+  account_id = var.account_id
+  sns_topic_arn = module.sns.topic_arn
 }
 
 #module "ses" {

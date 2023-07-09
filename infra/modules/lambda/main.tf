@@ -2,6 +2,7 @@ resource "aws_lambda_function" "notify_environment" {
   function_name = "notify-environment"
   role = aws_iam_role.notify_environment.arn
   package_type = "Image"
+  # TODO パイプラインの中でいい感じにしたい
   image_uri = "${var.ecr_image_uri}:latest"
   timeout = 60
 
