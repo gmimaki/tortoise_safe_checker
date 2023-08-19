@@ -28,6 +28,16 @@ def send_email(subject, body):
         Source=SENDER
     )
 
+sns = boto3.client('sns')
+def publish_topic(subject, body):
+    TOPIC_ARN = os.environ["TOPIC_ARN"]
+
+    sns.publish(
+        TopicArn=TOPIC_ARN,
+        Subject=subject,
+        Message=body
+    )
+
 def lambda_handler(event, context):
     for record in event['Records']:
         print(record)
@@ -43,4 +53,5 @@ def lambda_handler(event, context):
 湿度: {humidity} %
 """
 
+        publish_topic(subject, body)
         send_email(subject, body)

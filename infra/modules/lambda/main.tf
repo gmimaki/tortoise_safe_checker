@@ -8,8 +8,8 @@ resource "aws_lambda_function" "notify_environment" {
 
   environment {
     variables = {
-      #SENDER_EMAIL = var.sender_email
-      #RECIPIENT_EMAIL = var.receipient_email
+      SENDER_EMAIL = var.sender_email
+      RECIPIENT_EMAIL = var.receipient_email
       TOPIC_ARN = var.sns_topic_arn
     }
   }
