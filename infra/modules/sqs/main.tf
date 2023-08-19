@@ -1,5 +1,6 @@
 resource "aws_sqs_queue" "tortoise_safe_checker" {
   name = "tortoise-safe-checker"
+  visibility_timeout_seconds = 60
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.tortoise_safe_checker_dlq.arn,
     maxReceiveCount = 4

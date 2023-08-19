@@ -1,5 +1,4 @@
 import os
-import json
 import uuid
 import RPi.GPIO as GPIO
 import argparse
@@ -205,7 +204,7 @@ def main(input: InputData):
         if result:
             humidity, temperature = result
             now = time.time()
-            message = '{ "Humidity": %s, "Temperature": %s, "Time": %.8f }' % (humidity, temperature, now)
+            message = '{ "humidity": %s, "temperature": %s, "time": %.8f }' % (humidity, temperature, now)
             # json.dumpsすると\がついてAWS IoT Core側でJSONとして解釈されなくなる
             mqtt_connection.publish(topic=message_topic, payload=message, qos=mqtt.QoS.AT_LEAST_ONCE)
         time.sleep(900)
