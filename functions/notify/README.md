@@ -119,6 +119,6 @@ sam build
 
 aws ecr get-login-password  | docker login --username AWS --password-stdin <AWSアカウントID>.dkr.ecr.ap-northeast-1.amazonaws.com
 
-docker tag notifyfunction:python3.10-v1 025676559328.dkr.ecr.ap-northeast-1.amazonaws.com/notify_environment
+docker tag notifyfunction:python3.10-v1 <AWSアカウントID>.dkr.ecr.ap-northeast-1.amazonaws.com/notify_environment
 
-docker push 025676559328.dkr.ecr.ap-northeast-1.amazonaws.com/notify_environment
+docker push <AWSアカウントID>.dkr.ecr.ap-northeast-1.amazonaws.com/notify_environment

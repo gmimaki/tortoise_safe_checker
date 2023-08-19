@@ -37,6 +37,7 @@ module "lambda" {
   sns_topic_arn       = module.sns.topic_arn
   ecr_image_uri       = module.ecr.repository_url
   ecr_image_arn       = module.ecr.repository_arn
+  sqs_queue_arn = module.sqs.sqs_queue_arn
   #dynamodb_stream_arn = module.dynamodb.dynamodb_stream_arn
 }
 

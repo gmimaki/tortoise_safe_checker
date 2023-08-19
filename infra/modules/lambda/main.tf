@@ -56,16 +56,6 @@ resource "aws_iam_role_policy" "notify_environment" {
     {
       "Effect": "Allow",
       "Action": [
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:DescribeStream",
-        "dynamodb:ListStreams"
-      ],
-      "Resource": "${var.dynamodb_stream_arn}"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
         "ses:SendEmail",
         "ses:SendRawEmail"
       ],
@@ -81,6 +71,15 @@ resource "aws_iam_role_policy" "notify_environment" {
     {
       "Effect": "Allow",
       "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes"
+      ],
+      "Resource": "${var.sqs_queue_arn}"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
         "ecr:GetDownloadUrlForLayer",
         "ecr:BatchGetImage",
         "ecr:BatchCheckLayerAvailability"
@@ -90,12 +89,22 @@ resource "aws_iam_role_policy" "notify_environment" {
   ]
 }
 EOF
+
+    #{
+    #  "Effect": "Allow",
+    #  "Action": [
+    #    "dynamodb:GetRecords",
+    #    "dynamodb:GetShardIterator",
+    #    "dynamodb:DescribeStream",
+    #    "dynamodb:ListStreams"
+    #  ],
+    #  "Resource": "${var.dynamodb_stream_arn}"
+    #}
 }
 
 # TODO cloudwatch logsの作成も必要?
 
 resource "aws_lambda_event_source_mapping" "tortoise_environment" {
-  event_source_arn = var.dynamodb_stream_arn
+  event_source_arn = var.sqs_queue_arn
   function_name = aws_lambda_function.notify_environment.function_name
-  starting_position = "TRIM_HORIZON"
 }
