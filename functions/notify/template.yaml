@@ -22,8 +22,6 @@ Resources:
       - x86_64
       Environment:
         Variables:
-          SENDER_EMAIL: "gakutomimaki@gmail.com"
-          RECIPIENT_EMAIL: "gakutomimaki@gmail.com"
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./notify

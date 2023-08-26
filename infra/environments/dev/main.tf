@@ -25,15 +25,15 @@ module "sqs" {
   #sns_topic_arn = module.sns.topic_arn
 }
 
-module "ses" {
-  source = "../../modules/ses"
-  email = var.sender_email
-}
+#module "ses" {
+#  source = "../../modules/ses"
+#  email = var.sender_email
+#}
 
 module "lambda" {
   source = "../../modules/lambda"
-  sender_email = var.sender_email
-  receipient_email = var.receipient_email
+  #sender_email = var.sender_email
+  #receipient_email = var.receipient_email
   sns_topic_arn       = module.sns.topic_arn
   ecr_image_uri       = module.ecr.repository_url
   ecr_image_arn       = module.ecr.repository_arn

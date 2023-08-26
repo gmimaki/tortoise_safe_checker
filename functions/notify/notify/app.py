@@ -1,7 +1,9 @@
 import json
 import os
 import boto3
+import requests
 
+"""
 def send_email(subject, body):
     SENDER = os.environ["SENDER_EMAIL"]
     RECIPIENT = os.environ["RECIPIENT_EMAIL"]
@@ -27,9 +29,34 @@ def send_email(subject, body):
         },
         Source=SENDER
     )
+"""
+
+ssm_client = boto3.client('ssm')
+parameter_store_name = '/line/access_token'
+parameter_store_res = ssm_client.get_parameter(
+    Name=parameter_store_name,
+    WithDescription=True
+)
+line_access_token = parameter_store_res['Parameter']['Value']
+def send_line(body: str):
+    url = "https://api.line.me/v2/bot/message/broadcast"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": parameter_store_res
+    }
+    data = {
+        "messages": [
+            {
+                "type": "text",
+                "text": body
+            }
+        ]
+    }
+
+    requests.post(url, json=data, headers=headers)
 
 sns = boto3.client('sns')
-def publish_topic(subject, body):
+def publish_topic(subject: str, body: str):
     TOPIC_ARN = os.environ["TOPIC_ARN"]
 
     sns.publish(
