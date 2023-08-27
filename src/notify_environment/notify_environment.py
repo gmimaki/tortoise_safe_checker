@@ -53,8 +53,9 @@ def send_line(body: str):
         ]
     }
 
-    re = requests.post(url, json=data, headers=headers)
-    print(re)
+    res = requests.post(url, json=data, headers=headers)
+    res.raise_for_status()
+
 
 """
 sns = boto3.client('sns')
