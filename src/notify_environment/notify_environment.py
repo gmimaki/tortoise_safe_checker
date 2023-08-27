@@ -76,7 +76,7 @@ def lambda_handler(event, context):
         humidity = int(environment["humidity"])
         temperature = int(environment["temperature"])
 
-        if not (25 <= temperature <= 35) or 10 <= humidity:
+        if not (25 <= temperature <= 35) or humidity <= 10:
             #subject = "[アラート] とねのケージの温度・湿度を確認してください！"
             body = f"""とねのケージの温度または湿度が不適切な状態です！
 確認してください！
