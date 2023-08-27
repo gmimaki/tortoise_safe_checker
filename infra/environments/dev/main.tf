@@ -6,18 +6,18 @@
 #  source = "../../modules/glue"
 #}
 
-module "ecr" {
-  source = "../../modules/ecr"
-}
+#module "ecr" {
+#  source = "../../modules/ecr"
+#}
 
 #module "dynamodb" {
 #  source = "../../modules/dynamodb"
 #}
 
-module "sns" {
-  source        = "../../modules/sns"
-  phone_number  = var.phone_number
-}
+#module "sns" {
+#  source        = "../../modules/sns"
+#  phone_number  = var.phone_number
+#}
 
 module "sqs" {
   source     = "../../modules/sqs"
@@ -34,9 +34,9 @@ module "lambda" {
   source = "../../modules/lambda"
   #sender_email = var.sender_email
   #receipient_email = var.receipient_email
-  sns_topic_arn       = module.sns.topic_arn
-  ecr_image_uri       = module.ecr.repository_url
-  ecr_image_arn       = module.ecr.repository_arn
+  #sns_topic_arn       = module.sns.topic_arn
+  #ecr_image_uri       = module.ecr.repository_url
+  #ecr_image_arn       = module.ecr.repository_arn
   sqs_queue_arn = module.sqs.sqs_queue_arn
   #dynamodb_stream_arn = module.dynamodb.dynamodb_stream_arn
 }

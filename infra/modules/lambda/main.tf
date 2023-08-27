@@ -1,16 +1,24 @@
+data "archive_file" "zip" {
+  type        = "zip"
+  source_dir  = "../../../notify_function"
+  output_path = "./notify_function.zip"
+}
+
 resource "aws_lambda_function" "notify_environment" {
   function_name = "notify-environment"
+  filename = "./notify_function.zip"
   role = aws_iam_role.notify_environment.arn
-  package_type = "Image"
-  # TODO パイプラインの中でいい感じにしたい
-  image_uri = "${var.ecr_image_uri}:latest"
+  source_code_hash = data.archive_file.zip.output_base64sha256
+  #image_uri = "${var.ecr_image_uri}:latest"
+  runtime = "python3.10"
+  handler = "notify_environment.lambda_handler"
   timeout = 60
 
   environment {
     variables = {
       #SENDER_EMAIL = var.sender_email
       #RECIPIENT_EMAIL = var.receipient_email
-      TOPIC_ARN = var.sns_topic_arn
+      #TOPIC_ARN = var.sns_topic_arn
     }
   }
 
@@ -64,27 +72,11 @@ resource "aws_iam_role_policy" "notify_environment" {
     {
       "Effect": "Allow",
       "Action": [
-        "sns:Publish"
-      ],
-      "Resource": "${var.sns_topic_arn}"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
         "sqs:ReceiveMessage",
         "sqs:DeleteMessage",
         "sqs:GetQueueAttributes"
       ],
       "Resource": "${var.sqs_queue_arn}"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage",
-        "ecr:BatchCheckLayerAvailability"
-      ],
-      "Resource": "${var.ecr_image_arn}"
     },
     {
       "Effect": "Allow",
@@ -108,6 +100,22 @@ EOF
     #  ],
     #  "Resource": "${var.dynamodb_stream_arn}"
     #}
+    #{
+    #  "Effect": "Allow",
+    #  "Action": [
+    #    "sns:Publish"
+    #  ],
+    #  "Resource": "${var.sns_topic_arn}"
+    #},
+    #{
+    #  "Effect": "Allow",
+    #  "Action": [
+    #    "ecr:GetDownloadUrlForLayer",
+    #    "ecr:BatchGetImage",
+    #    "ecr:BatchCheckLayerAvailability"
+    #  ],
+    #  "Resource": "${var.ecr_image_arn}"
+    #},
 }
 
 # TODO cloudwatch logsの作成も必要?
