@@ -94,13 +94,13 @@ data "http" "root_ca" {
 #}
 
 resource "aws_cloudwatch_log_group" "error" {
-  name = "iottopic_error"
+    name = "iottopic_error"
 }
 
 resource "aws_iot_topic_rule" "rule" {
     name = "rule"
     description = "A rule to send message to a Firehose stream"
-    sql = "SELECT * FROM 'topic_temperature'"
+    sql = "SELECT * FROM 'tortoise_safe_checker/environment'"
     sql_version = "2016-03-23"
     enabled = true
 
@@ -110,11 +110,17 @@ resource "aws_iot_topic_rule" "rule" {
     #    separator = "\n"
     #}
 
-    dynamodbv2 {
-      put_item {
-        table_name = var.dynamodb_table_name
-      }
-      role_arn = aws_iam_role.topic_role.arn
+    #dynamodbv2 {
+    #  put_item {
+    #    table_name = var.dynamodb_table_name
+    #  }
+    #  role_arn = aws_iam_role.topic_role.arn
+    #}
+
+    sqs {
+        queue_url = var.sqs_queue_url
+        role_arn = aws_iam_role.topic_role.arn
+        use_base64 = false
     }
 
     error_action {
@@ -144,10 +150,6 @@ resource "aws_iam_role" "topic_role" {
 EOF
 }
 
-variable "dynamodb_table_arn" {
-    type = string
-}
-
 resource "aws_iam_role_policy" "topic_policy" {
     name = "iotcore_topic_policy"
     role = aws_iam_role.topic_role.id
@@ -168,6 +170,21 @@ resource "aws_iam_role_policy" "topic_policy" {
 #}
 #EOF
 
+#    policy = <<EOF
+#{
+#    "Version": "2012-10-17",
+#    "Statement": [
+#        {
+#            "Effect": "Allow",
+#            "Action": [
+#                "dynamodb:PutItem"
+#            ],
+#            "Resource": "${var.dynamodb_table_arn}"
+#        }
+#    ]
+#}
+#EOF
+
     policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -175,9 +192,9 @@ resource "aws_iam_role_policy" "topic_policy" {
         {
             "Effect": "Allow",
             "Action": [
-                "dynamodb:PutItem"
+                "sqs:SendMessage"
             ],
-            "Resource": "${var.dynamodb_table_arn}"
+            "Resource": "${var.sqs_queue_arn}"
         }
     ]
 }
@@ -185,44 +202,44 @@ EOF
 }
 
 resource "aws_iam_role" "error" {
-  name = "iot_error"
+    name = "iot_error"
 
-  assume_role_policy = <<EOF
+    assume_role_policy = <<EOF
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "iot.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "sts:AssumeRole",
+            "Principal": {
+                "Service": "iot.amazonaws.com"
+            },
+            "Effect": "Allow",
+            "Sid": ""
+        }
+    ]
 }
 EOF
 }
 
 resource "aws_iam_role_policy" "error" {
-  name = "iot_error"
-  role = aws_iam_role.error.id
+    name = "iot_error"
+    role = aws_iam_role.error.id
 
-  policy = <<EOF
+    policy = <<EOF
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents",
-        "logs:DescribeLogStreams"
-      ],
-      "Resource": "*"
-    }
-  ]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams"
+            ],
+            "Resource": "*"
+        }
+    ]
 }
 EOF
 }

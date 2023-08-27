@@ -1,5 +1,4 @@
 import os
-import json
 import uuid
 import RPi.GPIO as GPIO
 import argparse
@@ -200,15 +199,13 @@ def main(input: InputData):
     subscribe_result = subscribe_future.result()
     print("Subscribed with {}".format(str(subscribe_result['qos'])))
 
-    while True:
-        result = read_dht11()
-        if result:
-            humidity, temperature = result
-            now = time.time()
-            message = '{ "Humidity": %s, "Temperature": %s, "Time": %.8f }' % (humidity, temperature, now)
-            # json.dumpsすると\がついてAWS IoT Core側でJSONとして解釈されなくなる
-            mqtt_connection.publish(topic=message_topic, payload=message, qos=mqtt.QoS.AT_LEAST_ONCE)
-        time.sleep(900)
+    result = read_dht11()
+    if result:
+        humidity, temperature = result
+        now = time.time()
+        message = '{ "humidity": %s, "temperature": %s, "time": %.8f }' % (humidity, temperature, now)
+        # json.dumpsすると\がついてAWS IoT Core側でJSONとして解釈されなくなる
+        mqtt_connection.publish(topic=message_topic, payload=message, qos=mqtt.QoS.AT_LEAST_ONCE)
 
 def destroy():
     GPIO.cleanup()
