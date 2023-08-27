@@ -71,17 +71,18 @@ def publish_topic(subject: str, body: str):
 
 def lambda_handler(event, context):
     for record in event['Records']:
-        print(record)
+        print(record["body"])
         environment = json.loads(record["body"])
         humidity = int(environment["humidity"])
         temperature = int(environment["temperature"])
 
-        #subject = "[アラート] とねのケージの温度・湿度を確認してください！"
-        body = f"""とねのケージの温度または湿度が不適切な状態です！
+        if not (25 <= temperature <= 35) or 10 <= humidity:
+            #subject = "[アラート] とねのケージの温度・湿度を確認してください！"
+            body = f"""とねのケージの温度または湿度が不適切な状態です！
 確認してください！
 
 温度: {temperature} C
 湿度: {humidity} %"""
 
-        #publish_topic(subject, body)
-        send_line(body)
+            #publish_topic(subject, body)
+            send_line(body)
