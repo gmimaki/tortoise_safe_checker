@@ -149,11 +149,9 @@ def mqtt_connection_from_path(input: InputData) -> mqtt.Connection:
     socket_options.keep_alive_timeout_secs = 0
     socket_options.keep_alive_interval_secs = 0
     socket_options.keep_alive_max_probes = 0
-    username = None
     client_bootstrap = io.ClientBootstrap.get_or_create_static_default()
     tls_ctx = io.ClientTlsContext(tls_ctx_options)
     mqtt_client = mqtt.Client(client_bootstrap, tls_ctx)
-    proxy_options = None
 
     return mqtt.Connection(
         client=mqtt_client,
@@ -169,12 +167,12 @@ def mqtt_connection_from_path(input: InputData) -> mqtt.Connection:
         ping_timeout_ms=3000,
         protocol_operation_timeout_ms=0,
         will=None,
-        username=username,
+        username=None,
         password=None,
         socket_options=socket_options,
         use_websockets=False,
         websocket_handshake_transform=None,
-        proxy_options=proxy_options,
+        proxy_options=None,
         on_connection_success=None,
         on_connection_failure=None,
         on_connection_closed=None,
@@ -190,14 +188,14 @@ def main(input: InputData):
     message_topic = input.topic
 
     # Subscribe
-    print("Subscribing to topic '{}'...".format(message_topic))
-    subscribe_future, packet_id = mqtt_connection.subscribe(
-        topic=message_topic,
-        qos=mqtt.QoS.AT_LEAST_ONCE,
-        callback=None)
+    #print("Subscribing to topic '{}'...".format(message_topic))
+    #subscribe_future, packet_id = mqtt_connection.subscribe(
+    #    topic=message_topic,
+    #    qos=mqtt.QoS.AT_LEAST_ONCE,
+    #    callback=None)
 
-    subscribe_result = subscribe_future.result()
-    print("Subscribed with {}".format(str(subscribe_result['qos'])))
+    #subscribe_result = subscribe_future.result()
+    #print("Subscribed with {}".format(str(subscribe_result['qos'])))
 
     result = read_dht11()
     if result:

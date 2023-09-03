@@ -99,7 +99,7 @@ resource "aws_cloudwatch_log_group" "error" {
 
 resource "aws_iot_topic_rule" "rule" {
     name = "rule"
-    description = "A rule to send message to a Firehose stream"
+    description = "A rule to send message to SQS"
     sql = "SELECT * FROM 'tortoise_safe_checker/environment'"
     sql_version = "2016-03-23"
     enabled = true
